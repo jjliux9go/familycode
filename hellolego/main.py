@@ -10,21 +10,42 @@ from pybricks.robotics import DriveBase
 from pybricks.media.ev3dev import SoundFile, ImageFile
 
 # Write your program here
-ev3= EV3Brick()
+#ev3= EV3Brick()
 
 #initial a motor at port B
-test_motor = Motor(Port.B)
+motor = Motor(Port.A)
+irfsensor=InfrareSensor(Port.S4)
 
-ev3.speaker.beep()
-wait(1000)
-test_motor.run_target(500, 90)
-ev3.speaker.beep(frequency=1000,duration=500)
-test_motor.run_target(500, 180)
-wait(1000)
-ev3.speaker.beep(frequency=1000,duration=500)
-test_motor.run_target(500, 270)
-wait(1000)
-ev3.speaker.beep(frequency=1000,duration=500)
-test_motor.run_target(500, 360)
-wait(2000)
-ev3.speaker.beep(frequency=1000,duration=500)
+#ev3.speaker.beep()
+
+Speed=0
+
+def setSpeed(acc):
+    global speed
+    if acc < 0:
+        speed = max(0, speed - 1)
+    elif acc > 0:
+        speed = min(3, speed + 1)
+    else:
+        speed = 0
+    if speed > 0:
+        motor.run(speed*90)
+    else:
+        motor.stop()
+
+while True:
+    if not any(brick.buttons()):
+        wait(10)
+    else:
+        if Button.LEFT in brick.buttons():
+            setSpeed(-1)
+        elif Button.RIGHT in brick.buttons():
+            setSpeed(1)
+        elif Button.UP in brick.buttons():
+            setSpeed(0)
+        elif Button.CENTER in brick.buttons():
+            setSpeed(0)
+            break
+        wait(1000)
+if irfsersor.distance()< 200:
+    setSpeed(0)
